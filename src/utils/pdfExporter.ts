@@ -193,7 +193,6 @@ async function drawBaseImageOnPage(
     width: drawWidth,
     height: drawHeight,
     rotate: {
-      type: 'degrees',
       angle: doc.baseImage.rotation,
     },
   });
@@ -214,7 +213,6 @@ function drawQRCodeOnPage(
     width: doc.qr.sizePts,
     height: doc.qr.sizePts,
     rotate: {
-      type: 'degrees',
       angle: doc.qr.rotation,
     },
   });
@@ -371,7 +369,7 @@ async function drawLabelOnPage(
   // Canvas uses textBaseline='top' (Y at top of text)
   // PDF uses baseline (Y at baseline, no way to change this)
   // User testing shows we need the full fontSize to align properly
-  const ascent = 0;//fontSize; // Full font size moves baseline up to align with Canvas 'top'
+  const ascent = 0; // Full font size moves baseline up to align with Canvas 'top'
   
   lines.forEach((line, i) => {
     let lineX = labelX;

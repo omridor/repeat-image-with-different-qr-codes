@@ -145,7 +145,7 @@ export function Preview({ doc, currentRow, baseImageBlob, qrLogoBlob, onQROffset
   };
 
   const handleMouseUp = () => {
-    if (isDragging && tempOffset) {
+    if (isDragging && tempOffset && onQROffsetChange) {
       // Final update on mouse up
       if (renderTimeoutRef.current) {
         clearTimeout(renderTimeoutRef.current);

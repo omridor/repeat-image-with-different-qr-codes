@@ -192,8 +192,7 @@ async function drawQRCode(
   ctx: CanvasRenderingContext2D,
   doc: DocumentModel,
   qrCanvas: HTMLCanvasElement,
-  logoBlob?: Blob,
-  scale: number = 1
+  logoBlob?: Blob
 ): Promise<void> {
   // Calculate QR position based on canvas anchor + offset + QR anchor
   const qrPosition = calculateQRPosition(doc);
@@ -422,7 +421,6 @@ function drawOverlays(
   const safeMarginRight = doc.safe.enabled ? doc.safe.rightPts : 0;
   const safeMarginBottom = doc.safe.enabled ? doc.safe.bottomPts : 0;
   
-  const safeLeft = trimLeft + safeMarginLeft;
   const safeTop = trimTop + safeMarginTop;
   const safeRight = trimRight - safeMarginRight;
   const safeBottom = trimBottom - safeMarginBottom;

@@ -51,7 +51,7 @@ export async function generateQRCodeImage(
     throw new Error('Failed to generate QR code');
   }
   
-  return blob;
+  return blob as Blob;
 }
 
 export async function generateQRCodeCanvas(
@@ -108,7 +108,7 @@ export async function generateQRCodeCanvas(
   }
   
   // Convert to canvas at scaled size for crisp rendering
-  const qrImg = await createImageBitmap(blob);
+  const qrImg = await createImageBitmap(blob as Blob);
   const canvas = document.createElement('canvas');
   // Keep at higher resolution for preview
   canvas.width = qrConfig.sizePts * previewScale;
