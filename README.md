@@ -1,6 +1,6 @@
 # Repeat Image with Different QR Codes
 
-🚀 **[Try it Live](https://your-deployed-url.vercel.app)** (Update this after deployment)
+🚀 **[Try it Live](https://www.repeat-image-with-different-qr.codes/)** 
 
 A free, client-side web tool that generates multi-page PDFs with unique QR codes. Upload a single template image and automatically create hundreds of variations, each with a different QR code and optional label text.
 
