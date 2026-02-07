@@ -1,0 +1,238 @@
+You are an expert full-stack engineer. Build a local-only web tool that generates a multi-page PDF: each page contains the same user-uploaded template image (base artwork), but with a different QR code generated per row, and optional unique text (label) taken from CSV per row. The app must run locally (no external services) and persist templates, settings, and uploaded assets in the same browser.
+
+## Product name
+QR PDF Card Maker
+
+## Non-negotiables
+- Entirely client-side. No backend. No uploading to servers.
+- Must work offline after install (basic PWA optional, but at minimum no server dependency).
+- Persist settings + templates + uploaded assets in the same browser via IndexedDB.
+- Provide a fast WYSIWYG preview (not only at export time).
+- Support cm/in/mm inputs; internally convert to PDF points.
+
+## Tech stack (use these)
+- Vite + React + TypeScript
+- PDF generation: pdf-lib
+- QR generation/styling: qr-code-styling (supports embedded logo + dot styles)
+- Persistence: IndexedDB via idb-keyval (or a small repository wrapper you implement)
+- Preview: HTML canvas rendering using the same layout math as PDF export
+- CSV parsing: papaparse
+
+## Core concepts
+### 1) DocumentModel (single source of truth)
+All layout and settings live in a DocumentModel. Store sizes internally in points. Store UI unit preference separately.
+DocumentModel includes:
+- page: { widthPts, heightPts, unitPreference: 'cm'|'in'|'mm', presetId }
+- bleed: { topPts, rightPts, bottomPts, leftPts, linked: boolean }
+- safe: { topPts, rightPts, bottomPts, leftPts, linked: boolean }
+- overlays: { show: boolean, clipToTrim: boolean }
+- baseImage: {
+    rotationDeg,
+    fitMode: 'contain'|'cover'|'stretch',
+    extraPaddingPts: { top, right, bottom, left }  // adds blank margin to the image itself before placement
+  }
+- qr: {
+    sizePts,
+    anchor: 'tl'|'tr'|'bl'|'br'|'center',
+    positionPts: { x, y },   // position of anchor in page coords (origin top-left in UI)
+    snapToSafe: boolean,
+    groupRotationDeg: number,
+    style: {
+      pattern: 'squares'|'dots'|'rounded',
+      corners: 'square'|'rounded',
+      ecc: 'L'|'M'|'Q'|'H',
+      fgColor: string,
+      bgColor: string,
+      transparentBg: boolean,
+      quietZonePts: number
+    },
+    logo: {
+      enabled: boolean,
+      sizePct: number,
+      backingEnabled: boolean,
+      backingColor: string,
+      backingRadiusPts: number
+    }
+  }
+- label: {
+    enabled: boolean,
+    orientation: 'bottom'|'top'|'left'|'right',  // defines which direction is "under"
+    gapPts: number,
+    offsetXPts: number,
+    offsetYPts: number,
+    textBoxWidthMode: 'auto'|'custom',
+    textBoxWidthPts?: number,
+    align: 'start'|'center'|'end',               // maps to left/center/right or top/middle/bottom depending on orientation
+    rotateWithGroup: boolean,                    // default false
+    font: {
+      family: 'Helvetica'|'TimesRoman'|'Courier'|'Custom',
+      customFontAssetId?: string,                // if user uploads .ttf/.otf
+      sizePts: number,
+      weight: 'regular'|'bold',
+      color: string,
+      lineHeight: number,                        // multiplier e.g. 1.2
+      letterSpacingPts: number
+    },
+    box: {
+      enabled: boolean,
+      color: string,
+      paddingPts: number,
+      radiusPts: number
+    },
+    outline: {
+      enabled: boolean,
+      color: string,
+      widthPts: number
+    },
+    wrap: {
+      mode: 'word'|'char'|'none',
+      maxLines: number,
+      ellipsis: boolean
+    }
+  }
+- data: {
+    mode: 'urls'|'csv',
+    urlsText?: string,                            // one per line
+    csvText?: string,
+    csvConfig: {
+      payloadColumn?: string,                     // default 'url'
+      labelColumn?: string,                       // default 'label'
+      labelTemplate?: string,                     // supports variables; see below
+      allowNonHttpSchemes: boolean
+    },
+    derive: {
+      enabled: boolean,                           // allows label from url if no label col
+      method: 'lastPathSegment'|'regex',
+      regex?: string
+    }
+  }
+
+### 2) Templates
+A Template is a saved bundle:
+- TemplateMeta: { id, name, notes?, createdAt, updatedAt, thumbnailPngDataUrl? }
+- TemplateBundle:
+  - meta
+  - docModel
+  - assets:
+    - baseImageBlob + mimeType + filename
+    - qrLogoBlob? + mimeType + filename
+    - customFontBlob? (.ttf/.otf) optional
+  - optional: storeCsvData: boolean (default false)
+    - if true, persist csvText/urlsText in template; otherwise only mapping + settings are stored
+
+Persist templates in IndexedDB:
+- templatesIndex store: list of {id, name, updatedAt, thumbnail}
+- templates store: full TemplateBundle keyed by id
+Also persist:
+- lastSelectedTemplateId
+- a Working Draft auto-save (debounced) so refresh doesn’t lose unsaved edits
+
+Template UI:
+- Templates panel with:
+  - select active template
+  - New template (from current state)
+  - Save changes
+  - Save as...
+  - Rename
+  - Delete
+  - Export template (.json bundle)
+  - Import template (.json bundle)
+- On switch, prompt for unsaved changes (Discard / Save / Cancel)
+- Generate thumbnail on save (render preview at small size)
+
+Export/Import:
+- Template export JSON schemaVersion=1
+- Include assets as base64 (warn if >10MB)
+- Include migration function placeholder for future schema versions
+
+## Presets & page sizes
+Preset dropdown:
+- Business card (US): 3.5in x 2in
+- Business card (EU): 85mm x 55mm
+- Playing card (poker): 2.5in x 3.5in
+- Custom
+Units toggle: cm/in/mm
+Bleed defaults: 0.3cm each side (link/unlink)
+Safe margin defaults: 0.5cm each side (link/unlink)
+Toggle: show overlays (bleed/safe)
+Toggle: clip to trim area (default ON)
+
+## Data input (URLs or CSV)
+Two modes:
+A) URL list mode:
+- textarea, one URL per line
+- optional label uses labelTemplate variables (see below)
+B) CSV mode:
+- upload .csv or paste CSV text
+- parse header row
+- choose payloadColumn (default 'url')
+- choose labelColumn (default 'label', optional)
+- show preview table (first 10 rows) and row count
+- validate each row; show per-row errors
+
+Variables available in templates:
+- {index} 1-based
+- {id} extracted (derive rules)
+- {short} short id (same as id unless you implement shortening)
+- {col:HeaderName} any CSV column
+Label value resolves in priority:
+1) if labelColumn selected and row has value -> use it
+2) else if derive.enabled -> derive from payload using method
+3) else if labelTemplate exists -> render from variables
+4) else blank
+
+Derive label methods:
+- lastPathSegment: take URL pathname last segment (strip query/hash)
+- regex: user provides regex with first capture group used as id
+
+Validation:
+- default: allow only http/https payloads
+- toggle allowNonHttpSchemes (for future)
+
+## QR + label layout controls
+QR placement:
+- primary: drag-and-drop on preview
+- also numeric x/y + anchor selector
+- QR size numeric (square)
+
+QR group rotation:
+- slider 0–360 (applies to QR; label rotates too if rotateWithGroup=true)
+
+Label controls:
+- toggle show label
+- orientation: bottom/top/left/right (defines what “under” means)
+- gap numeric
+- fine offsets x/y numeric
+- textbox width: auto (match QR width) or custom width numeric
+- alignment: start/center/end (maps based on orientation)
+- rotateWithGroup toggle (default false)
+Font controls:
+- family: Helvetica / TimesRoman / Courier (+ optional custom font upload)
+- size pts
+- weight regular/bold
+- color
+- lineHeight multiplier
+- letterSpacing pts
+Background box controls:
+- enabled toggle
+- background color
+- padding pts
+- radius pts
+Outline controls:
+- enabled toggle
+- outline color
+- outline width pts
+Wrap controls:
+- mode word/char/none
+- maxLines
+- ellipsis toggle
+
+## Preview requirements (WYSIWYG)
+Center preview canvas showing current page index:
+- checkerboard outside trim area
+- trim area
+- base image rendered with rotation + fitMode, including extraPadding applied to image
+- QR rendered as image from qr-code-styling
+- label rendered with same wrapping/ellipsis rules as PDF
+- overlays: bleed + safe rectangles when enabled
+- drag QR group (QR + label) with mouse/touch; update model position
