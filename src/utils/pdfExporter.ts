@@ -1,4 +1,4 @@
-import { PDFDocument, rgb, StandardFonts, PDFPage, PDFImage } from 'pdf-lib';
+import { PDFDocument, rgb, StandardFonts, PDFPage, PDFImage, degrees } from 'pdf-lib';
 import type { DocumentModel, DataRow } from '../types';
 import { generateQRCodeImage } from './qrGenerator';
 
