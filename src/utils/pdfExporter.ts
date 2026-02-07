@@ -192,9 +192,7 @@ async function drawBaseImageOnPage(
     y: drawY,
     width: drawWidth,
     height: drawHeight,
-    rotate: {
-      angle: doc.baseImage.rotation,
-    },
+    rotate: degrees(doc.baseImage.rotation),
   });
 }
 
@@ -212,9 +210,7 @@ function drawQRCodeOnPage(
     y: pos.y,
     width: doc.qr.sizePts,
     height: doc.qr.sizePts,
-    rotate: {
-      angle: doc.qr.rotation,
-    },
+    rotate: degrees(doc.qr.rotation),
   });
   
   // Draw logo separately at full resolution if provided  
@@ -560,7 +556,6 @@ function drawRoundedRectangle(
   });
   
   // Draw corner circles (ellipses)
-  const diameter = r * 2;
   
   // Bottom-left corner
   page.drawEllipse({

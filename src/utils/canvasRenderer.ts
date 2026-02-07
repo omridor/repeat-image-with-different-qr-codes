@@ -44,7 +44,7 @@ export async function renderPreview(context: RenderContext): Promise<void> {
   if (row) {
     try {
       const qrCanvas = await generateQRCodeCanvas(row.payload, doc.qr, qrLogoBlob, scale);
-      drawQRCode(ctx, doc, qrCanvas, qrLogoBlob, scale);
+      drawQRCode(ctx, doc, qrCanvas, qrLogoBlob);
     } catch (error) {
       console.error('Failed to render QR code:', error);
     }
