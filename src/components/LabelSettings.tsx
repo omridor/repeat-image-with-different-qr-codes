@@ -180,11 +180,11 @@ export function LabelSettings({ doc, onChange }: LabelSettingsProps) {
             <label htmlFor="rotate-with-group">Rotate with QR group</label>
           </div>
 
-          <div style={{ marginTop: '20px', marginBottom: '12px', paddingBottom: '8px', borderBottom: '1px solid #e0e0e0' }}>
-            <strong style={{ fontSize: '13px', color: '#2c3e50', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Font</strong>
-          </div>
-
-          <div className="form-group">
+          <div className="config-panel">
+            <div style={{ fontSize: '13px', fontWeight: 600, color: '#2c3e50', marginBottom: '12px', paddingBottom: '8px', borderBottom: '1px solid #dee2e6' }}>
+              Font
+            </div>
+            <div className="form-group">
             <label>Family</label>
             <select
               className="form-control"
@@ -261,20 +261,18 @@ export function LabelSettings({ doc, onChange }: LabelSettingsProps) {
               step="0.1"
             />
           </div>
-
-          <div style={{ marginTop: '20px', marginBottom: '12px', paddingBottom: '8px', borderBottom: '1px solid #e0e0e0' }}>
-            <strong style={{ fontSize: '13px', color: '#2c3e50', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Background Box</strong>
           </div>
 
-          <div className="checkbox-group">
-            <input
-              type="checkbox"
-              id="box-enabled"
-              checked={doc.label.box.enabled}
-              onChange={e => handleBoxChange('enabled', e.target.checked)}
-            />
-            <label htmlFor="box-enabled">Enable background box</label>
-          </div>
+          <div className="config-panel">
+            <div className="config-panel-header">
+              <input
+                type="checkbox"
+                id="box-enabled"
+                checked={doc.label.box.enabled}
+                onChange={e => handleBoxChange('enabled', e.target.checked)}
+              />
+              <label htmlFor="box-enabled">Background Box</label>
+            </div>
 
           {doc.label.box.enabled && (
             <>
@@ -320,20 +318,18 @@ export function LabelSettings({ doc, onChange }: LabelSettingsProps) {
               </div>
             </>
           )}
-
-          <div style={{ marginTop: '20px', marginBottom: '12px', paddingBottom: '8px', borderBottom: '1px solid #e0e0e0' }}>
-            <strong style={{ fontSize: '13px', color: '#2c3e50', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Text Outline</strong>
           </div>
 
-          <div className="checkbox-group">
-            <input
-              type="checkbox"
-              id="outline-enabled"
-              checked={doc.label.outline.enabled}
-              onChange={e => handleOutlineChange('enabled', e.target.checked)}
-            />
-            <label htmlFor="outline-enabled">Enable text outline</label>
-          </div>
+          <div className="config-panel">
+            <div className="config-panel-header">
+              <input
+                type="checkbox"
+                id="outline-enabled"
+                checked={doc.label.outline.enabled}
+                onChange={e => handleOutlineChange('enabled', e.target.checked)}
+              />
+              <label htmlFor="outline-enabled">Text Outline</label>
+            </div>
 
           {doc.label.outline.enabled && (
             <>
@@ -367,12 +363,13 @@ export function LabelSettings({ doc, onChange }: LabelSettingsProps) {
               </div>
             </>
           )}
-
-          <div style={{ marginTop: '20px', marginBottom: '12px', paddingBottom: '8px', borderBottom: '1px solid #e0e0e0' }}>
-            <strong style={{ fontSize: '13px', color: '#2c3e50', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Text Wrapping</strong>
           </div>
 
-          <div className="form-group">
+          <div className="config-panel">
+            <div style={{ fontSize: '13px', fontWeight: 600, color: '#2c3e50', marginBottom: '12px', paddingBottom: '8px', borderBottom: '1px solid #dee2e6' }}>
+              Text Wrapping
+            </div>
+            <div className="form-group">
             <label>Wrap Mode</label>
             <select
               className="form-control"
@@ -405,6 +402,7 @@ export function LabelSettings({ doc, onChange }: LabelSettingsProps) {
               onChange={e => handleWrapChange('ellipsis', e.target.checked)}
             />
             <label htmlFor="ellipsis">Add ellipsis (...) when truncated</label>
+          </div>
           </div>
           </div>
         )}
