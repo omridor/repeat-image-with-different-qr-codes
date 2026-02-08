@@ -180,7 +180,9 @@ export function LabelSettings({ doc, onChange }: LabelSettingsProps) {
             <label htmlFor="rotate-with-group">Rotate with QR group</label>
           </div>
 
-          <h2 style={{ marginTop: '20px' }}>Font</h2>
+          <div style={{ marginTop: '20px', marginBottom: '12px', paddingBottom: '8px', borderBottom: '1px solid #e0e0e0' }}>
+            <strong style={{ fontSize: '13px', color: '#2c3e50', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Font</strong>
+          </div>
 
           <div className="form-group">
             <label>Family</label>
@@ -260,7 +262,9 @@ export function LabelSettings({ doc, onChange }: LabelSettingsProps) {
             />
           </div>
 
-          <h2 style={{ marginTop: '20px' }}>Background Box</h2>
+          <div style={{ marginTop: '20px', marginBottom: '12px', paddingBottom: '8px', borderBottom: '1px solid #e0e0e0' }}>
+            <strong style={{ fontSize: '13px', color: '#2c3e50', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Background Box</strong>
+          </div>
 
           <div className="checkbox-group">
             <input
@@ -317,7 +321,9 @@ export function LabelSettings({ doc, onChange }: LabelSettingsProps) {
             </>
           )}
 
-          <h2 style={{ marginTop: '20px' }}>Text Outline</h2>
+          <div style={{ marginTop: '20px', marginBottom: '12px', paddingBottom: '8px', borderBottom: '1px solid #e0e0e0' }}>
+            <strong style={{ fontSize: '13px', color: '#2c3e50', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Text Outline</strong>
+          </div>
 
           <div className="checkbox-group">
             <input
@@ -362,7 +368,9 @@ export function LabelSettings({ doc, onChange }: LabelSettingsProps) {
             </>
           )}
 
-          <h2 style={{ marginTop: '20px' }}>Text Wrapping</h2>
+          <div style={{ marginTop: '20px', marginBottom: '12px', paddingBottom: '8px', borderBottom: '1px solid #e0e0e0' }}>
+            <strong style={{ fontSize: '13px', color: '#2c3e50', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Text Wrapping</strong>
+          </div>
 
           <div className="form-group">
             <label>Wrap Mode</label>
