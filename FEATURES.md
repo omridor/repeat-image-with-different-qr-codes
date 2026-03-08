@@ -13,7 +13,7 @@
 #### 2. **Persistent Storage**
 - Settings saved in IndexedDB
 - Templates stored locally
-- Uploaded assets (images, logos) persisted
+- Uploaded assets (images, PDFs, logos) persisted
 - Auto-save working draft (debounced)
 - Last selected template remembered
 
@@ -45,8 +45,10 @@
   - Toggle bleed/safe overlays
   - Clip to trim area option
 
-#### 6. **Base Image Management**
-- Upload template image (PNG, JPEG)
+#### 6. **Base Template Management**
+- Upload template (PNG, JPEG, or PDF)
+- Single-page PDF validation
+- Auto-populate canvas size from PDF dimensions
 - Fit modes: contain, cover, stretch
 - 0-360° rotation slider
 - Extra padding controls (top, right, bottom, left)
@@ -237,7 +239,7 @@
 ### PDF Generation
 - Uses pdf-lib for PDF creation
 - Coordinate system conversion (canvas ↔ PDF)
-- Image embedding (PNG, JPEG)
+- Template support (PNG, JPEG, PDF)
 - Font embedding (standard fonts)
 - Rotation and transformations
 

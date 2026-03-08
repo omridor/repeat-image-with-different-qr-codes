@@ -2,7 +2,7 @@
 
 🚀 **[Try it Live](https://www.repeat-image-with-different-qr.codes/)** 
 
-A free, client-side web tool that generates multi-page PDFs with unique QR codes. Upload a single template image and automatically create hundreds of variations, each with a different QR code and optional label text.
+A free, client-side web tool that generates multi-page PDFs with unique QR codes. Upload a single template (image or PDF) and automatically create hundreds of variations, each with a different QR code and optional label text.
 
 ## 🌟 Perfect For
 
@@ -17,7 +17,7 @@ A free, client-side web tool that generates multi-page PDFs with unique QR codes
 ## ✨ Key Features
 
 ### 🎨 One Template, Many QR Codes
-Upload a single template image and generate hundreds of variations, each with a unique QR code.
+Upload a single template (image or PDF) and generate hundreds of variations, each with a unique QR code.
 
 ### 📄 Multi-Page PDF Export
 Export all designs as a single PDF file, ready for professional printing.
@@ -106,7 +106,7 @@ npm run build
 
 1. **Visit the Landing Page** - Learn about features and use cases
 2. **Click "Start Creating"** - Launch the tool
-3. **Upload Template** - Add your base image (logo, artwork, design)
+3. **Upload Template** - Add your base template (image or PDF)
 4. **Add Data** - Paste URLs or upload CSV with QR destinations
 5. **Customize** - Position QR code, adjust styling, add labels
 6. **Export PDF** - Generate multi-page document ready for printing

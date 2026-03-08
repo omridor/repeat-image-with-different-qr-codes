@@ -1,4 +1,4 @@
-You are an expert full-stack engineer. Build a local-only web tool that generates a multi-page PDF: each page contains the same user-uploaded template image (base artwork), but with a different QR code generated per row, and optional unique text (label) taken from CSV per row. The app must run locally (no external services) and persist templates, settings, and uploaded assets in the same browser.
+You are an expert full-stack engineer. Build a local-only web tool that generates a multi-page PDF: each page contains the same user-uploaded template (base image or PDF), but with a different QR code generated per row, and optional unique text (label) taken from CSV per row. The app must run locally (no external services) and persist templates, settings, and uploaded assets in the same browser.
 
 ## Product name
 QR PDF Card Maker

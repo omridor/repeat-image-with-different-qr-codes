@@ -142,7 +142,7 @@ QR generator/
 | Feature | Status | Notes |
 |---------|--------|-------|
 | **Multi-page PDF** | ✅ Complete | One page per row |
-| **Base image** | ✅ Complete | PNG/JPEG embedding |
+| **Base template** | ✅ Complete | PNG/JPEG/PDF support |
 | **QR codes** | ✅ Complete | Generated per page |
 | **Labels** | ✅ Complete | Text with formatting |
 | **Progress** | ✅ Complete | Progress bar during export |
@@ -199,7 +199,7 @@ QR generator/
 
 ### PDF Generation
 - **Coordinate Conversion**: Canvas (top-left) ↔ PDF (bottom-left)
-- **Image Embedding**: PNG and JPEG support
+- **Template Support**: PNG, JPEG, and PDF base templates
 - **Standard Fonts**: Helvetica, Times, Courier (regular/bold)
 - **Batch Processing**: Progress callback for UX
 - **Error Handling**: Skip invalid rows gracefully

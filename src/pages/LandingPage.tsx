@@ -27,7 +27,7 @@ export function LandingPage() {
               <div className="feature-icon">🎨</div>
               <h3>One Template, Many QR Codes</h3>
               <p>
-                Upload a single template image and automatically generate hundreds of variations,
+                Upload a single template (image or PDF) and automatically generate hundreds of variations,
                 each with a unique QR code. Perfect for event tickets, product labels, or name badges.
               </p>
             </div>
@@ -126,8 +126,8 @@ export function LandingPage() {
               <div className="step-number">1</div>
               <h3>Upload Your Template</h3>
               <p>
-                Start by uploading your base image (logo, artwork, or design) that will appear
-                on every page. Supports PNG and JPEG formats.
+                Start by uploading your base template (image or PDF) that will appear
+                on every page. Supports PNG, JPEG, and PDF formats.
               </p>
             </div>
             <div className="step">
@@ -254,10 +254,10 @@ export function LandingPage() {
               </p>
             </div>
             <div className="faq-item">
-              <h3>What image formats are supported?</h3>
+              <h3>What file formats are supported?</h3>
               <p>
-                You can upload PNG and JPEG images as your template. The tool also supports PNG and JPEG
-                for QR code logos. PDFs are exported in standard PDF format compatible with all printers.
+                You can upload PNG, JPEG, or PDF files as your base template. The tool also supports PNG and JPEG
+                for QR code logos. All output is exported in standard PDF format compatible with all printers.
               </p>
             </div>
             <div className="faq-item">

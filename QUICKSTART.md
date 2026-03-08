@@ -18,10 +18,10 @@ Open this URL in your browser.
 2. Choose a preset (e.g., "Business card (US)")
 3. Select your preferred units (cm, in, or mm)
 
-#### Step 2: Upload Base Image (Optional)
-1. Find **"Base Image"** section
-2. Click "Upload Template Image"
-3. Select a PNG or JPEG file
+#### Step 2: Upload Base Template (Optional)
+1. Find **"Upload Template"** section
+2. Click "Upload Template (Image or PDF)"
+3. Select a PNG, JPEG, or PDF file
 4. Adjust fit mode if needed
 
 #### Step 3: Add Data
@@ -154,7 +154,7 @@ Your template now includes:
 4. Export PDF, print on label sheets
 
 ### Event Name Badges
-1. Upload company logo as base image
+1. Upload company logo or PDF template as base
 2. CSV with: url (profile), name, title
 3. Label template: `{col:name}\n{col:title}`
 4. Large QR centered at bottom
