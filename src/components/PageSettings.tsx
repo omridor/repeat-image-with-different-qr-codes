@@ -102,6 +102,33 @@ export function PageSettings({ doc, onChange }: PageSettingsProps) {
         </select>
       </div>
 
+      {doc.baseImage.sourceType === 'pdf' && doc.baseImage.pdfDimensions && (
+        <div className="form-group">
+          <button
+            className="btn btn-secondary"
+            style={{ width: '100%' }}
+            onClick={() => {
+              const dims = doc.baseImage.pdfDimensions;
+              if (dims) {
+                onChange({
+                  page: {
+                    ...doc.page,
+                    presetId: 'custom',
+                    widthPts: dims.widthPts,
+                    heightPts: dims.heightPts,
+                  },
+                });
+              }
+            }}
+          >
+            📄 Use PDF Dimensions
+          </button>
+          <p style={{ fontSize: '11px', color: '#666', marginTop: '4px' }}>
+            Set canvas size to match your uploaded PDF: {pointsToUnit(doc.baseImage.pdfDimensions.widthPts, doc.page.unitPreference).toFixed(2)} × {pointsToUnit(doc.baseImage.pdfDimensions.heightPts, doc.page.unitPreference).toFixed(2)} {doc.page.unitPreference}
+          </p>
+        </div>
+      )}
+
       <div className="form-group">
         <label>Units</label>
         <div className="radio-group">
@@ -237,7 +264,7 @@ export function PageSettings({ doc, onChange }: PageSettingsProps) {
             checked={doc.safe.enabled}
             onChange={(e) => onChange({ safe: { ...doc.safe, enabled: e.target.checked } })}
           />
-          <label htmlFor="safe-enabled">Add Safe Margins</label>
+          <label htmlFor="safe-enabled">Show Safe Margins</label>
         </div>
         <p style={{ fontSize: '11px', color: '#666', marginTop: '4px', paddingLeft: '8px' }}>
           Creates an inner safety zone for critical content. You can configure your base image to fit within this safe area when uploading.

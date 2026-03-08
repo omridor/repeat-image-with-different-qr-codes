@@ -236,6 +236,8 @@ export const DEFAULT_DOCUMENT_MODEL: DocumentModel = {
     show: true,
   },
   baseImage: {
+    sourceType: 'image',
+    pdfDimensions: undefined,
     rotation: 0,
     fitMode: 'contain',
     placementBounds: 'canvas',

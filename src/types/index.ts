@@ -17,6 +17,7 @@ export type FontWeight = 'regular' | 'bold';
 export type WrapMode = 'word' | 'char' | 'none';
 export type DataMode = 'urls' | 'csv';
 export type DeriveMethod = 'lastPathSegment' | 'regex';
+export type BaseTemplateSourceType = 'image' | 'pdf';
 
 export interface PageConfig {
   widthPts: number;
@@ -46,6 +47,8 @@ export interface ExtraPadding {
 }
 
 export interface BaseImageConfig {
+  sourceType: BaseTemplateSourceType;
+  pdfDimensions?: { widthPts: number; heightPts: number };
   rotation: Rotation;
   fitMode: FitMode;
   placementBounds: PlacementBounds;

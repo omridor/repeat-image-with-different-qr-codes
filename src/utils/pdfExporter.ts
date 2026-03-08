@@ -15,20 +15,27 @@ export async function exportPDF(options: ExportOptions): Promise<Uint8Array> {
   
   const pdfDoc = await PDFDocument.create();
   
-  // Load base image if provided
+  // Load base template (image or PDF)
   let baseImage: PDFImage | undefined;
+  let basePdfDoc: PDFDocument | undefined;
+  let basePdfPage: PDFPage | undefined;
+  
   if (baseImageBlob) {
     const arrayBuffer = await baseImageBlob.arrayBuffer();
     const bytes = new Uint8Array(arrayBuffer);
     
     try {
-      if (baseImageBlob.type.includes('png')) {
+      if (baseImageBlob.type === 'application/pdf') {
+        // Load PDF template
+        basePdfDoc = await PDFDocument.load(bytes);
+        basePdfPage = basePdfDoc.getPage(0);
+      } else if (baseImageBlob.type.includes('png')) {
         baseImage = await pdfDoc.embedPng(bytes);
       } else if (baseImageBlob.type.includes('jpeg') || baseImageBlob.type.includes('jpg')) {
         baseImage = await pdfDoc.embedJpg(bytes);
       }
     } catch (error) {
-      console.error('Failed to embed base image:', error);
+      console.error('Failed to load base template:', error);
     }
   }
   
@@ -45,11 +52,19 @@ export async function exportPDF(options: ExportOptions): Promise<Uint8Array> {
       continue;
     }
     
-    const page = pdfDoc.addPage([doc.page.widthPts, doc.page.heightPts]);
+    let page: PDFPage;
     
-    // Draw base image
-    if (baseImage) {
-      await drawBaseImageOnPage(page, doc, baseImage);
+    // If base template is a PDF, copy the page; otherwise create a new page
+    if (basePdfDoc && basePdfPage) {
+      const [copiedPage] = await pdfDoc.copyPages(basePdfDoc, [0]);
+      page = pdfDoc.addPage(copiedPage);
+    } else {
+      page = pdfDoc.addPage([doc.page.widthPts, doc.page.heightPts]);
+      
+      // Draw base image if it's an image (not PDF)
+      if (baseImage) {
+        await drawBaseImageOnPage(page, doc, baseImage);
+      }
     }
     
     // Generate and draw QR code (without logo embedded)
@@ -202,7 +217,7 @@ function drawQRCodeOnPage(
   qrImage: PDFImage,
   logoImage?: PDFImage
 ): void {
-  const pos = calculateQRPositionPDF(doc);
+  const pos = calculateQRPositionPDF(doc, page);
   
   // Draw QR code
   page.drawImage(qrImage, {
@@ -303,7 +318,7 @@ async function drawLabelOnPage(
   }
   
   const fontSize = doc.label.font.sizePts;
-  const qrPos = calculateQRPositionPDF(doc);
+  const qrPos = calculateQRPositionPDF(doc, page);
   
   // Calculate text box width
   let textBoxWidth = doc.qr.sizePts;
@@ -391,7 +406,10 @@ async function drawLabelOnPage(
   });
 }
 
-function calculateQRPositionPDF(doc: DocumentModel): { x: number; y: number } {
+function calculateQRPositionPDF(doc: DocumentModel, page: PDFPage): { x: number; y: number } {
+  // Get the page's mediaBox to account for PDF coordinate offset
+  const mediaBox = page.getMediaBox();
+  
   // Step 1: Get the canvas anchor point (in canvas coordinates - top-left origin)
   const canvasAnchorPoint = getCanvasAnchorPointPDF(
     doc.qr.canvasAnchor,
@@ -399,10 +417,10 @@ function calculateQRPositionPDF(doc: DocumentModel): { x: number; y: number } {
     doc.page.heightPts
   );
   
-  // Step 2: Apply offset
+  // Step 2: Apply offset - DO NOT invert Y yet, keep in canvas coordinate system
   const anchoredPoint = {
     x: canvasAnchorPoint.x + doc.qr.offsetXPts,
-    y: canvasAnchorPoint.y + doc.qr.offsetYPts,
+    y: canvasAnchorPoint.y + doc.qr.offsetYPts, // Keep same as canvas
   };
   
   // Step 3: Convert to top-left position based on QR anchor (still in canvas coords)
@@ -413,8 +431,8 @@ function calculateQRPositionPDF(doc: DocumentModel): { x: number; y: number } {
     doc.qr.sizePts
   );
   
-  // Step 4: Convert to PDF coordinates (bottom-left origin)
-  const pdfY = doc.page.heightPts - canvasTopLeftPos.y - doc.qr.sizePts;
+  // Step 4: Convert to PDF coordinates (bottom-left origin) + account for mediaBox offset
+  const pdfY = mediaBox.y + doc.page.heightPts - canvasTopLeftPos.y - doc.qr.sizePts;
   
   return { x: canvasTopLeftPos.x, y: pdfY };
 }

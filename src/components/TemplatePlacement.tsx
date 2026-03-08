@@ -2,14 +2,13 @@ import type { DocumentModel } from '../types';
 import { pointsToUnit, unitToPoints } from '../utils/units';
 import { CollapsibleCard } from './CollapsibleCard';
 
-interface BaseImageSettingsProps {
+interface TemplatePlacementProps {
   doc: DocumentModel;
   onChange: (updates: Partial<DocumentModel>) => void;
-  onImageUpload: (file: File) => void;
-  hasImage: boolean;
+  hasTemplate: boolean;
 }
 
-export function BaseImageSettings({ doc, onChange, onImageUpload, hasImage }: BaseImageSettingsProps) {
+export function TemplatePlacement({ doc, onChange, hasTemplate }: TemplatePlacementProps) {
   const handleBaseImageChange = (key: string, value: any) => {
     onChange({
       baseImage: { ...doc.baseImage, [key]: value },
@@ -26,37 +25,13 @@ export function BaseImageSettings({ doc, onChange, onImageUpload, hasImage }: Ba
     });
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      onImageUpload(file);
-      // Clear the input value to allow re-selection of the same file
-      e.target.value = '';
-    }
-  };
-
   return (
-    <CollapsibleCard title="Base Image" icon="🖼️" defaultExpanded={false}>
+    <CollapsibleCard title="Template Placement on Canvas" icon="🎯" defaultExpanded={false}>
       <p style={{ fontSize: '12px', color: '#666', marginBottom: '16px', lineHeight: '1.5' }}>
-        Upload a template image that will appear on every page. This is your background design that will be repeated with different QR codes.
+        Configure how your template image or PDF is positioned and scaled within the canvas.
       </p>
       
-      <div className="form-group">
-        <label>Upload Template Image</label>
-        <input
-          type="file"
-          className="form-control"
-          accept="image/png,image/jpeg,image/jpg"
-          onChange={handleFileUpload}
-        />
-        {hasImage && (
-          <div style={{ fontSize: '11px', color: '#27ae60', marginTop: '4px' }}>
-            ✓ Image is loaded (file input can't show saved files)
-          </div>
-        )}
-      </div>
-
-      {hasImage && (
+      {hasTemplate ? (
         <div className="config-panel">
           <div className="form-group">
             <label>Placement Bounds</label>
@@ -220,6 +195,10 @@ export function BaseImageSettings({ doc, onChange, onImageUpload, hasImage }: Ba
             </div>
           </div>
         </div>
+      ) : (
+        <p style={{ fontSize: '12px', color: '#999', fontStyle: 'italic' }}>
+          Upload a template first to configure placement settings.
+        </p>
       )}
     </CollapsibleCard>
   );

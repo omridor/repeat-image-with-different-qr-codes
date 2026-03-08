@@ -16,7 +16,8 @@ import {
 
 import { Preview } from './components/Preview';
 import { PageSettings } from './components/PageSettings';
-import { BaseImageSettings } from './components/BaseImageSettings';
+import { TemplateUpload } from './components/TemplateUpload';
+import { TemplatePlacement } from './components/TemplatePlacement';
 import { DataInput } from './components/DataInput';
 import { QRSettings } from './components/QRSettings';
 import { LabelSettings } from './components/LabelSettings';
@@ -94,10 +95,31 @@ function App() {
     setDoc(prev => ({ ...prev, ...updates }));
   }, []);
 
-  const handleBaseImageUpload = useCallback(async (file: File) => {
+  const handleBaseImageUpload = useCallback(async (file: File, pdfDimensions?: { widthPts: number; heightPts: number }) => {
     const blob = new Blob([await file.arrayBuffer()], { type: file.type });
     setBaseImageBlob(blob);
     await saveBaseImage(blob);
+    
+    // Update doc with PDF dimensions if provided
+    if (pdfDimensions) {
+      setDoc(prev => ({
+        ...prev,
+        baseImage: {
+          ...prev.baseImage,
+          sourceType: 'pdf',
+          pdfDimensions
+        }
+      }));
+    } else {
+      setDoc(prev => ({
+        ...prev,
+        baseImage: {
+          ...prev.baseImage,
+          sourceType: 'image',
+          pdfDimensions: undefined
+        }
+      }));
+    }
   }, []);
 
   const handleQRLogoUpload = useCallback(async (file: File) => {
@@ -217,15 +239,24 @@ function App() {
       <div className="app-main">
         <div className="sidebar">
           <div className="sidebar-content">
-            <PageSettings doc={doc} onChange={handleDocChange} />
-            
-            <BaseImageSettings
+            {/* STEP 1: Upload Template */}
+            <TemplateUpload
               doc={doc}
-              onChange={handleDocChange}
-              onImageUpload={handleBaseImageUpload}
-              hasImage={!!baseImageBlob}
+              onTemplateUpload={handleBaseImageUpload}
+              hasTemplate={!!baseImageBlob}
             />
             
+            {/* STEP 2: Output PDF Page Settings */}
+            <PageSettings doc={doc} onChange={handleDocChange} />
+            
+            {/* STEP 3: Template Placement */}
+            <TemplatePlacement
+              doc={doc}
+              onChange={handleDocChange}
+              hasTemplate={!!baseImageBlob}
+            />
+            
+            {/* STEP 4+: Remaining sections */}
             <DataInput doc={doc} rows={rows} onChange={handleDocChange} />
             
             <QRSettings

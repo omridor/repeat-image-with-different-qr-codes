@@ -12,6 +12,7 @@
     "idb-keyval": "^6.2.1",
     "papaparse": "^5.4.1",
     "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^5.5.207",
     "qr-code-styling": "^1.6.0-rc.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

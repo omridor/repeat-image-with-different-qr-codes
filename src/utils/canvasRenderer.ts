@@ -81,7 +81,71 @@ async function drawBaseImage(
   doc: DocumentModel,
   blob: Blob
 ): Promise<{ x: number; y: number; width: number; height: number }> {
-  const img = await createImageBitmap(blob);
+  let img: ImageBitmap;
+  
+  // Check if it's a PDF based on doc.baseImage.sourceType (more reliable than blob.type)
+  if (doc.baseImage.sourceType === 'pdf') {
+    try {
+      // Import pdfjs-dist for PDF rendering
+      // Use legacy build for better Vite compatibility
+      const pdfjsLib = await import('pdfjs-dist/legacy/build/pdf.mjs');
+      
+      // Set worker source to use the bundled worker from node_modules
+      // @ts-ignore - workerSrc is valid but may not be in types
+      pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+        'pdfjs-dist/legacy/build/pdf.worker.mjs',
+        import.meta.url
+      ).toString();
+      
+      // Load the PDF
+      const arrayBuffer = await blob.arrayBuffer();
+      const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+      const pdfDoc = await loadingTask.promise;
+      const page = await pdfDoc.getPage(1);
+      
+      // Get page viewport
+      const viewport = page.getViewport({ scale: 1 });
+      
+      // Create a temporary canvas to render PDF
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = viewport.width;
+      tempCanvas.height = viewport.height;
+      const tempCtx = tempCanvas.getContext('2d');
+      
+      if (!tempCtx) {
+        throw new Error('Failed to get canvas context');
+      }
+      
+      // Render PDF page to canvas with explicit options to avoid optional content issues
+      const renderTask = page.render({
+        canvasContext: tempCtx,
+        viewport: viewport,
+        intent: 'display'
+      } as any);
+      
+      try {
+        await renderTask.promise;
+      } catch (renderError) {
+        // If render fails due to optional content, try without it
+        console.warn('PDF render failed, retrying with basic render:', renderError);
+        
+        // Try a simpler render without optional content config
+        const simpleRenderTask = page.render({
+          canvasContext: tempCtx,
+          viewport: viewport
+        } as any);
+        await simpleRenderTask.promise;
+      }
+      
+      // Convert canvas to ImageBitmap
+      img = await createImageBitmap(tempCanvas);
+    } catch (error) {
+      console.error('Failed to render PDF in preview:', error);
+      throw error;
+    }
+  } else {
+    img = await createImageBitmap(blob);
+  }
   
   // Calculate bounds based on placementBounds setting
   let boundsX = 0;
