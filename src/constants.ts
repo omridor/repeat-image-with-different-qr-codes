@@ -210,6 +210,7 @@ export const PAGE_PRESETS: PagePreset[] = [
 
 // Default document model
 export const DEFAULT_DOCUMENT_MODEL: DocumentModel = {
+  mode: 'build-from-image',
   page: {
     widthPts: PAGE_PRESETS[0].widthPts,
     heightPts: PAGE_PRESETS[0].heightPts,

@@ -24,7 +24,11 @@ export async function saveTemplatesIndex(index: TemplateMeta[]): Promise<void> {
 // Individual template
 export async function getTemplate(id: string): Promise<TemplateBundle | null> {
   const template = await get<TemplateBundle>(`${STORAGE_KEYS.TEMPLATE_PREFIX}${id}`);
-  return template || null;
+  if (!template) return null;
+  if (!template.docModel.mode) {
+    template.docModel.mode = template.docModel.baseImage?.sourceType === 'pdf' ? 'print-ready' : 'build-from-image';
+  }
+  return template;
 }
 
 export async function saveTemplate(bundle: TemplateBundle): Promise<void> {
@@ -65,7 +69,12 @@ export async function saveLastSelectedTemplateId(id: string): Promise<void> {
 
 // Working draft (auto-save)
 export async function getWorkingDraft(): Promise<DocumentModel | null> {
-  return await get<DocumentModel>(STORAGE_KEYS.WORKING_DRAFT) || null;
+  const draft = await get<DocumentModel>(STORAGE_KEYS.WORKING_DRAFT);
+  if (!draft) return null;
+  if (!draft.mode) {
+    draft.mode = draft.baseImage?.sourceType === 'pdf' ? 'print-ready' : 'build-from-image';
+  }
+  return draft;
 }
 
 export async function saveWorkingDraft(doc: DocumentModel): Promise<void> {

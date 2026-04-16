@@ -1,13 +1,14 @@
-import type { DocumentModel } from '../types';
+import type { DocumentModel, DocumentMode } from '../types';
 import { CollapsibleCard } from './CollapsibleCard';
 
 interface TemplateUploadProps {
   doc: DocumentModel;
   onTemplateUpload: (file: File, pdfDimensions?: { widthPts: number; heightPts: number }) => void;
+  onModeChange: (mode: DocumentMode) => void;
   hasTemplate: boolean;
 }
 
-export function TemplateUpload({ doc, onTemplateUpload, hasTemplate }: TemplateUploadProps) {
+export function TemplateUpload({ doc, onTemplateUpload, onModeChange, hasTemplate }: TemplateUploadProps) {
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -63,7 +64,7 @@ export function TemplateUpload({ doc, onTemplateUpload, hasTemplate }: TemplateU
       <p style={{ fontSize: '12px', color: '#666', marginBottom: '16px', lineHeight: '1.5' }}>
         Upload a template image or PDF that will appear on every page as the background.
       </p>
-      
+
       <div className="form-group">
         <label>Upload Template (Image or PDF)</label>
         <input
@@ -77,6 +78,35 @@ export function TemplateUpload({ doc, onTemplateUpload, hasTemplate }: TemplateU
             ✓ {doc.baseImage.sourceType === 'pdf' ? 'PDF' : 'Image'} is loaded (file input can't show saved files)
           </div>
         )}
+      </div>
+
+      <div className="form-group">
+        <label>Template Mode</label>
+        <p style={{ fontSize: '11px', color: '#666', marginTop: '2px', marginBottom: '8px' }}>
+          Does your template already include bleed and print marks, or do you need to set them up here?
+        </p>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button
+            className={`btn ${doc.mode === 'print-ready' ? 'btn-primary' : 'btn-secondary'}`}
+            style={{ flex: 1, textAlign: 'left', padding: '10px 12px', lineHeight: '1.4', height: 'auto' }}
+            onClick={() => onModeChange('print-ready')}
+          >
+            <div style={{ fontWeight: 600 }}>Print-Ready</div>
+            <div style={{ fontSize: '11px', marginTop: '2px', opacity: 0.85, fontWeight: 'normal' }}>
+              Bleed is already built into my template
+            </div>
+          </button>
+          <button
+            className={`btn ${doc.mode === 'build-from-image' ? 'btn-primary' : 'btn-secondary'}`}
+            style={{ flex: 1, textAlign: 'left', padding: '10px 12px', lineHeight: '1.4', height: 'auto' }}
+            onClick={() => onModeChange('build-from-image')}
+          >
+            <div style={{ fontWeight: 600 }}>Build From Image</div>
+            <div style={{ fontSize: '11px', marginTop: '2px', opacity: 0.85, fontWeight: 'normal' }}>
+              Set up bleed &amp; safe zones here
+            </div>
+          </button>
+        </div>
       </div>
     </CollapsibleCard>
   );

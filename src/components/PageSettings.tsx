@@ -81,6 +81,9 @@ export function PageSettings({ doc, onChange }: PageSettingsProps) {
     });
   };
 
+  const isPrintReady = doc.mode === 'print-ready';
+  const pageDimsReadOnly = isPrintReady && doc.baseImage.sourceType === 'pdf';
+
   return (
     <CollapsibleCard title="Output PDF Page Settings" icon="📄" defaultExpanded={true}>
       <p style={{ fontSize: '12px', color: '#666', marginBottom: '16px', lineHeight: '1.5' }}>
@@ -155,6 +158,8 @@ export function PageSettings({ doc, onChange }: PageSettingsProps) {
             value={pointsToUnit(doc.page.widthPts, doc.page.unitPreference).toFixed(2)}
             onChange={e => handleDimensionChange('width', parseFloat(e.target.value))}
             step="0.1"
+            readOnly={pageDimsReadOnly}
+            style={pageDimsReadOnly ? { background: '#f5f5f5', cursor: 'not-allowed' } : {}}
           />
         </div>
         <div className="form-group">
@@ -165,11 +170,18 @@ export function PageSettings({ doc, onChange }: PageSettingsProps) {
             value={pointsToUnit(doc.page.heightPts, doc.page.unitPreference).toFixed(2)}
             onChange={e => handleDimensionChange('height', parseFloat(e.target.value))}
             step="0.1"
+            readOnly={pageDimsReadOnly}
+            style={pageDimsReadOnly ? { background: '#f5f5f5', cursor: 'not-allowed' } : {}}
           />
         </div>
       </div>
+      {pageDimsReadOnly && (
+        <p style={{ fontSize: '11px', color: '#888', marginTop: '-8px', marginBottom: '12px' }}>
+          Page size is locked to the uploaded PDF dimensions. Switch to Build From Image mode to edit manually.
+        </p>
+      )}
 
-      <div className="config-panel">
+      {!isPrintReady && <div className="config-panel">
         <div className="config-panel-header">
           <input
             type="checkbox"
@@ -254,9 +266,9 @@ export function PageSettings({ doc, onChange }: PageSettingsProps) {
       )}
           </div>
         )}
-      </div>
+      </div>}
 
-      <div className="config-panel">
+      {!isPrintReady && <div className="config-panel">
         <div className="config-panel-header">
           <input
             type="checkbox"
@@ -341,28 +353,30 @@ export function PageSettings({ doc, onChange }: PageSettingsProps) {
       )}
           </div>
         )}
-      </div>
+      </div>}
 
-      <div className="checkbox-group">
-        <input
-          type="checkbox"
-          id="show-overlays"
-          checked={doc.overlays.show}
-          onChange={e =>
-            onChange({
-              overlays: { show: e.target.checked },
-            })
-          }
-        />
-        <label htmlFor="show-overlays">Show overlay guides & legend</label>
-      </div>
+      {!isPrintReady && (
+        <div className="checkbox-group">
+          <input
+            type="checkbox"
+            id="show-overlays"
+            checked={doc.overlays.show}
+            onChange={e =>
+              onChange({
+                overlays: { show: e.target.checked },
+              })
+            }
+          />
+          <label htmlFor="show-overlays">Show overlay guides & legend</label>
+        </div>
+      )}
 
       <div className="info-box" style={{ fontSize: '12px', background: '#e8f5e9', borderLeftColor: '#4caf50', marginTop: '16px' }}>
         <strong>📐 Dimensions Summary:</strong>
         <div style={{ marginTop: '6px' }}>
-          <strong>Final Trimmed Size:</strong> {pointsToUnit(doc.page.widthPts, doc.page.unitPreference).toFixed(2)} × {pointsToUnit(doc.page.heightPts, doc.page.unitPreference).toFixed(2)} {doc.page.unitPreference}
+          <strong>Page Size:</strong> {pointsToUnit(doc.page.widthPts, doc.page.unitPreference).toFixed(2)} × {pointsToUnit(doc.page.heightPts, doc.page.unitPreference).toFixed(2)} {doc.page.unitPreference}
         </div>
-        {doc.bleed.enabled && (doc.bleed.leftPts > 0 || doc.bleed.topPts > 0 || doc.bleed.rightPts > 0 || doc.bleed.bottomPts > 0) && (
+        {!isPrintReady && doc.bleed.enabled && (doc.bleed.leftPts > 0 || doc.bleed.topPts > 0 || doc.bleed.rightPts > 0 || doc.bleed.bottomPts > 0) && (
           <>
             <div style={{ marginTop: '4px' }}>
               <strong>Full Size with Bleed:</strong> {pointsToUnit(doc.page.widthPts + doc.bleed.leftPts + doc.bleed.rightPts, doc.page.unitPreference).toFixed(2)} × {pointsToUnit(doc.page.heightPts + doc.bleed.topPts + doc.bleed.bottomPts, doc.page.unitPreference).toFixed(2)} {doc.page.unitPreference}
@@ -372,9 +386,14 @@ export function PageSettings({ doc, onChange }: PageSettingsProps) {
             </div>
           </>
         )}
+        {isPrintReady && (
+          <div style={{ marginTop: '4px', fontSize: '11px', color: '#2e7d32' }}>
+            Page size matches your template.
+          </div>
+        )}
       </div>
 
-      <div className="info-box" style={{ fontSize: '11px', marginTop: '12px' }}>
+      {!isPrintReady && <div className="info-box" style={{ fontSize: '11px', marginTop: '12px' }}>
         <strong>Understanding Margins:</strong>
         <div style={{ marginTop: '8px' }}>
           {doc.bleed.enabled && (
@@ -391,7 +410,7 @@ export function PageSettings({ doc, onChange }: PageSettingsProps) {
             <strong>Safe Area:</strong> The inner zone (no overlay) where all critical content (text, logos, QR codes) should be placed to ensure nothing important gets cut off.
           </div>
         </div>
-      </div>
+      </div>}
     </CollapsibleCard>
   );
 }

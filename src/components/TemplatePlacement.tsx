@@ -25,26 +25,30 @@ export function TemplatePlacement({ doc, onChange, hasTemplate }: TemplatePlacem
     });
   };
 
+  const isPrintReady = doc.mode === 'print-ready';
+
   return (
     <CollapsibleCard title="Template Placement on Canvas" icon="🎯" defaultExpanded={false}>
       <p style={{ fontSize: '12px', color: '#666', marginBottom: '16px', lineHeight: '1.5' }}>
         Configure how your template image or PDF is positioned and scaled within the canvas.
       </p>
-      
+
       {hasTemplate ? (
         <div className="config-panel">
-          <div className="form-group">
-            <label>Placement Bounds</label>
-            <select
-              className="form-control"
-              value={doc.baseImage.placementBounds}
-              onChange={e => handleBaseImageChange('placementBounds', e.target.value)}
-            >
-              <option value="bleed-area">Full Bleed Area (entire page)</option>
-              <option value="canvas">Canvas (inside trim line)</option>
-              <option value="safe-area">Safe Area (inside margins)</option>
-            </select>
-          </div>
+          {!isPrintReady && (
+            <div className="form-group">
+              <label>Placement Bounds</label>
+              <select
+                className="form-control"
+                value={doc.baseImage.placementBounds}
+                onChange={e => handleBaseImageChange('placementBounds', e.target.value)}
+              >
+                <option value="bleed-area">Full Bleed Area (entire page)</option>
+                <option value="canvas">Canvas (inside trim line)</option>
+                <option value="safe-area">Safe Area (inside margins)</option>
+              </select>
+            </div>
+          )}
 
           <div className="form-group">
             <label>Fit Mode</label>

@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import './App.css';
-import type { DocumentModel, DataRow } from './types';
+import type { DocumentModel, DataRow, DocumentMode } from './types';
 import { DEFAULT_DOCUMENT_MODEL } from './constants';
 import { processData } from './utils/dataProcessor';
 import { exportPDF } from './utils/pdfExporter';
@@ -95,6 +95,17 @@ function App() {
     setDoc(prev => ({ ...prev, ...updates }));
   }, []);
 
+  const handleModeChange = useCallback((newMode: DocumentMode) => {
+    setDoc(prev => ({
+      ...prev,
+      mode: newMode,
+      ...(newMode === 'print-ready' ? {
+        baseImage: { ...prev.baseImage, placementBounds: 'canvas' },
+        overlays: { show: false },
+      } : {}),
+    }));
+  }, []);
+
   const handleBaseImageUpload = useCallback(async (file: File, pdfDimensions?: { widthPts: number; heightPts: number }) => {
     const blob = new Blob([await file.arrayBuffer()], { type: file.type });
     setBaseImageBlob(blob);
@@ -104,15 +115,25 @@ function App() {
     if (pdfDimensions) {
       setDoc(prev => ({
         ...prev,
+        mode: 'print-ready',
+        page: {
+          ...prev.page,
+          presetId: 'custom',
+          widthPts: pdfDimensions.widthPts,
+          heightPts: pdfDimensions.heightPts,
+        },
         baseImage: {
           ...prev.baseImage,
           sourceType: 'pdf',
-          pdfDimensions
-        }
+          pdfDimensions,
+          placementBounds: 'canvas',
+        },
+        overlays: { show: false },
       }));
     } else {
       setDoc(prev => ({
         ...prev,
+        mode: 'build-from-image',
         baseImage: {
           ...prev.baseImage,
           sourceType: 'image',
@@ -243,6 +264,7 @@ function App() {
             <TemplateUpload
               doc={doc}
               onTemplateUpload={handleBaseImageUpload}
+              onModeChange={handleModeChange}
               hasTemplate={!!baseImageBlob}
             />
             

@@ -18,6 +18,7 @@ export type WrapMode = 'word' | 'char' | 'none';
 export type DataMode = 'urls' | 'csv';
 export type DeriveMethod = 'lastPathSegment' | 'regex';
 export type BaseTemplateSourceType = 'image' | 'pdf';
+export type DocumentMode = 'print-ready' | 'build-from-image';
 
 export interface PageConfig {
   widthPts: number;
@@ -161,6 +162,7 @@ export interface DataConfig {
 }
 
 export interface DocumentModel {
+  mode: DocumentMode;
   page: PageConfig;
   bleed: MarginConfig;
   safe: MarginConfig;

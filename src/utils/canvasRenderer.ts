@@ -56,7 +56,7 @@ export async function renderPreview(context: RenderContext): Promise<void> {
   }
   
   // Draw overlays (bleed and safe margins)
-  if (doc.overlays.show) {
+  if (doc.overlays.show && doc.mode === 'build-from-image') {
     drawOverlays(ctx, doc);
   }
   
